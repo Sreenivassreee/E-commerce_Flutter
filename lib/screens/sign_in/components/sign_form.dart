@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/Firebase%20Services/manageAuth.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/form_error.dart';
 import 'package:shop_app/helper/keyboard.dart';
@@ -20,6 +21,7 @@ class _SignFormState extends State<SignForm> {
   String password;
   bool remember = false;
   final List<String> errors = [];
+  ManageAuth manageAuth = ManageAuth();
 
   void addError({String error}) {
     if (!errors.contains(error))
@@ -72,12 +74,19 @@ class _SignFormState extends State<SignForm> {
           SizedBox(height: getProportionateScreenHeight(20)),
           DefaultButton(
             text: "Continue",
-            press: () {
+            press: () async {
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-                // if all are valid then go to success screen
+                print(email);
+                print(password);
+                var status =
+                    await manageAuth.login(email: email, pass: password);
                 KeyboardUtil.hideKeyboard(context);
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                if (status) {
+                  Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                } else {
+                  print("Faild");
+                }
               }
             },
           ),

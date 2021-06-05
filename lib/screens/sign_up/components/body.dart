@@ -17,6 +17,10 @@ class Body extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
+
+               
+
+
                 SizedBox(height: SizeConfig.screenHeight * 0.04), // 4%
                 Text("Register Account", style: headingStyle),
                 Text(

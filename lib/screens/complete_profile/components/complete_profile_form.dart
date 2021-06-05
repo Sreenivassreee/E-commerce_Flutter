@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:shop_app/Firebase%20Services/manageAuth.dart';
 import 'package:shop_app/components/custom_surfix_icon.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/form_error.dart';
@@ -15,24 +17,13 @@ class CompleteProfileForm extends StatefulWidget {
 class _CompleteProfileFormState extends State<CompleteProfileForm> {
   final _formKey = GlobalKey<FormState>();
   final List<String> errors = [];
-  String firstName;
-  String lastName;
-  String phoneNumber;
-  String address;
+  TextEditingController firstName = TextEditingController();
+  TextEditingController lastName = TextEditingController();
+  TextEditingController phoneNumber = TextEditingController();
+  TextEditingController address = TextEditingController();
 
-  void addError({String error}) {
-    if (!errors.contains(error))
-      setState(() {
-        errors.add(error);
-      });
-  }
+  ManageAuth manageAuth = ManageAuth();
 
-  void removeError({String error}) {
-    if (errors.contains(error))
-      setState(() {
-        errors.remove(error);
-      });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +42,19 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
             text: "continue",
-            press: () {
-              if (_formKey.currentState.validate()) {
-                Navigator.pushNamed(context, OtpScreen.routeName);
-              }
+            press: () async {
+              // if (_formKey.currentState.validate()) {
+              print("=====================");
+              print(firstName.text);
+              print(lastName.text);
+              print(phoneNumber.text);
+              await manageAuth.updateUserDataInSignUp(
+                  firstN: firstName.text.toString(),
+                  lastN: lastName.text.toString(),
+                  phoneN: phoneNumber.text.toString(),
+                  add: address.text.toString());
+              Navigator.pushNamed(context, OtpScreen.routeName);
+              // }
             },
           ),
         ],
@@ -64,20 +64,16 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
   TextFormField buildAddressFormField() {
     return TextFormField(
-      onSaved: (newValue) => address = newValue,
+      controller: address,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kAddressNullError);
+         
+        } else {
+          address.text = value;
         }
         return null;
       },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kAddressNullError);
-          return "";
-        }
-        return null;
-      },
+    
       decoration: InputDecoration(
         labelText: "Address",
         hintText: "Enter your phone address",
@@ -93,20 +89,16 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
   TextFormField buildPhoneNumberFormField() {
     return TextFormField(
       keyboardType: TextInputType.phone,
-      onSaved: (newValue) => phoneNumber = newValue,
+      controller: phoneNumber,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kPhoneNumberNullError);
+        
+        }else {
+          phoneNumber.text = value;
         }
         return null;
       },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kPhoneNumberNullError);
-          return "";
-        }
-        return null;
-      },
+     
       decoration: InputDecoration(
         labelText: "Phone Number",
         hintText: "Enter your phone number",
@@ -120,7 +112,16 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
   TextFormField buildLastNameFormField() {
     return TextFormField(
-      onSaved: (newValue) => lastName = newValue,
+      controller: lastName,
+       onChanged: (value) {
+        if (value.isNotEmpty) {
+         
+        }else {
+          lastName.text = value;
+        }
+        
+      },
+      
       decoration: InputDecoration(
         labelText: "Last Name",
         hintText: "Enter your last name",
@@ -134,20 +135,16 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
 
   TextFormField buildFirstNameFormField() {
     return TextFormField(
-      onSaved: (newValue) => firstName = newValue,
+      controller: firstName,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          removeError(error: kNamelNullError);
+          
+        }else {
+          firstName.text = value;
         }
         return null;
       },
-      validator: (value) {
-        if (value.isEmpty) {
-          addError(error: kNamelNullError);
-          return "";
-        }
-        return null;
-      },
+     
       decoration: InputDecoration(
         labelText: "First Name",
         hintText: "Enter your first name",

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shop_app/constants.dart';
+import 'package:shop_app/screens/home/home_screen.dart';
 import 'package:shop_app/screens/sign_in/sign_in_screen.dart';
 import 'package:shop_app/size_config.dart';
 
@@ -13,7 +15,9 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  FirebaseAuth auth = FirebaseAuth.instance;
   int currentPage = 0;
+  bool isLoading = true;
   List<Map<String, String>> splashData = [
     {
       "text": "Welcome to Tokoto, Let’s shop!",
@@ -30,58 +34,78 @@ class _BodyState extends State<Body> {
     },
   ];
   @override
+  void initState() {
+    isLoading = true;
+    if (auth.currentUser != null) {
+      isLoading = false;
+      Future.delayed(Duration.zero, () {
+      Navigator.pushNamed(context, HomeScreen.routeName);
+});
+  
+    }else{
+      isLoading = false;
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 3,
-              child: PageView.builder(
-                onPageChanged: (value) {
-                  setState(() {
-                    currentPage = value;
-                  });
-                },
-                itemCount: splashData.length,
-                itemBuilder: (context, index) => SplashContent(
-                  image: splashData[index]["image"],
-                  text: splashData[index]['text'],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: getProportionateScreenWidth(20)),
-                child: Column(
-                  children: <Widget>[
-                    Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        splashData.length,
-                        (index) => buildDot(index: index),
+    return !isLoading
+        ? SafeArea(
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: PageView.builder(
+                      onPageChanged: (value) {
+                        setState(() {
+                          currentPage = value;
+                        });
+                      },
+                      itemCount: splashData.length,
+                      itemBuilder: (context, index) => SplashContent(
+                        image: splashData[index]["image"],
+                        text: splashData[index]['text'],
                       ),
                     ),
-                    Spacer(flex: 3),
-                    DefaultButton(
-                      text: "Continue",
-                      press: () {
-                        Navigator.pushNamed(context, SignInScreen.routeName);
-                      },
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(20)),
+                      child: Column(
+                        children: <Widget>[
+                          Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              splashData.length,
+                              (index) => buildDot(index: index),
+                            ),
+                          ),
+                          Spacer(flex: 3),
+                          DefaultButton(
+                            text: "Continue",
+                            press: () {
+                              Navigator.pushNamed(
+                                  context, SignInScreen.routeName);
+                            },
+                          ),
+                          Spacer(),
+                        ],
+                      ),
                     ),
-                    Spacer(),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          )
+        : Center(
+            child: CircularProgressIndicator(),
+          );
   }
 
   AnimatedContainer buildDot({int index}) {
