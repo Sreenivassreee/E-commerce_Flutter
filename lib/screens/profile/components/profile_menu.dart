@@ -7,7 +7,7 @@ class ProfileMenu extends StatelessWidget {
   const ProfileMenu({
     Key key,
     @required this.text,
-    @required this.icon,
+    this.icon,
     this.press,
   }) : super(key: key);
 
@@ -25,11 +25,11 @@ class ProfileMenu extends StatelessWidget {
         onPressed: press,
         child: Row(
           children: [
-            SvgPicture.asset(
-              icon,
+            icon!=null?SvgPicture.asset(
+              icon??"",
               color: kPrimaryColor,
               width: 22,
-            ),
+            ):Container(),
             SizedBox(width: 20),
             Expanded(child: Text(text)),
             Icon(Icons.arrow_forward_ios),
